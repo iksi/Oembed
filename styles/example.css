@@ -18,7 +18,13 @@ body {
     text-align: center;
     margin-bottom: 1.5em;
     padding-top: 56.25%;
-    background-color: #000000;
+    background-color: gray;
+}
+
+.embed > a {
+    position: absolute;
+    top: 1em;
+    left: 1em;
 }
 
 .embed > iframe {
