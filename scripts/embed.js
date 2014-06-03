@@ -30,10 +30,16 @@ var embed = (function () {
 
         return {
             init: function () {
-                var link = element.querySelector('a');
+
+                var link = element.querySelector('a'),
+                    autoplay = element.getAttribute('data-autoplay');
+
+                if (autoplay === null) {
+                    autoplay = false;
+                }
 
                 if (link) {
-                    request('oembed.php?url=' + encodeURIComponent(link.href), embed);
+                    request('oembed.php?url=' + encodeURIComponent(link.getAttribute('href')) + '&autoplay=' + autoplay, embed);
                     element.removeChild(link);
                 }
             }

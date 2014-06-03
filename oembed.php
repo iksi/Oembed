@@ -1,11 +1,16 @@
 <?php
+
     require_once('classes/Oembed.php');
     header('Content-type: application/json');
 
-    $url = array_key_exists('url', $_GET)
-        ? $_GET['url']
-        : FALSE;
+    $vars = array('url', 'autoplay');
+    $params = array();
+
+    foreach ($vars as $var)
+    {
+        $params[$var] = array_key_exists($var, $_GET) ? $_GET[$var] : FALSE;
+    }
 
     $oembed = new Oembed;
 
-    echo $oembed->fetch($url);
+    echo $oembed->fetch($params['url'], $params['autoplay']);

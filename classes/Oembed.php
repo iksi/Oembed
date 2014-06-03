@@ -2,9 +2,9 @@
 
 class Oembed {
 
-    public function fetch($url)
+    public function fetch($url, $autoplay)
     {
-        $oembed_url = $this->_oembed_url($url);
+        $oembed_url = $this->_oembed_url($url, $autoplay);
 
         if ($oembed_url === FALSE)
         {
@@ -14,13 +14,13 @@ class Oembed {
         $ch = curl_init($oembed_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        $response = curl_exec($ch);
+        $data = curl_exec($ch);
         curl_close($ch);
 
-        return $this->_filter($response);
+        return $this->_filter($data, $autoplay);
     }
 
-    protected function _filter($data)
+    protected function _filter($data, $autoplay)
     {
         $values = json_decode($data, TRUE);
 
@@ -28,9 +28,10 @@ class Oembed {
         if ($values['provider_name'] === 'YouTube')
         {
             $params = array(
-                'rel' => false,
-                'showinfo' => false,
-                'autohide' => true
+                'rel' => FALSE,
+                'showinfo' => FALSE,
+                'autohide' => TRUE,
+                'autoplay' => ($autoplay === 'true')
             );
 
             $query = http_build_query($params);
@@ -41,7 +42,7 @@ class Oembed {
         return json_encode($values);
     }
 
-    protected function _oembed_url($url)
+    protected function _oembed_url($url, $autoplay)
     {
         if ( ! filter_var($url, FILTER_VALIDATE_URL))
         {
@@ -71,7 +72,7 @@ class Oembed {
             return FALSE;
         }
 
-        return $oembed_url.'?url='.$url;
+        return $oembed_url.'?url='.$url.'&autoplay='.$autoplay;
     }
 
 }
