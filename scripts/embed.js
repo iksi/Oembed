@@ -31,8 +31,9 @@ var embed = (function () {
         return {
             init: function () {
                 var link = element.querySelector('a');
+
                 if (link) {
-                    request('/alpha.iksi.cc/oembed?url=' + link.href, embed);
+                    request('oembed.php?url=' + encodeURIComponent(link.href), embed);
                     element.removeChild(link);
                 }
             }
