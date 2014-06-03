@@ -66,5 +66,5 @@ var embeds = (function () {
 
 (function () {
     'use strict';
-    embeds('.embed').init();
+    embeds('[data-type="embed"]').init();
 }());
