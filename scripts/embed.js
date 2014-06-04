@@ -20,9 +20,7 @@ var embed = (function () {
             if (data.html) {
                 element.innerHTML = data.html;
                 var iframe = element.querySelector('iframe');
-                if (iframe.getAttribute('width') === '100%') {
-                    element.style.paddingTop = iframe.height + 'px'; // Audio
-                } else {
+                if (iframe.getAttribute('width') !== '100%') { // Audio
                     element.style.paddingTop = (100 * iframe.height / iframe.width) + '%'; // Videos
                 }
             }

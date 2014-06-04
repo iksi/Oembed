@@ -24,7 +24,7 @@ class Oembed {
     {
         $values = json_decode($data, TRUE);
 
-        // YouTube, Vimeo, SoundCloud, Mixcloud
+        // YouTube
         if ($values['provider_name'] === 'YouTube')
         {
             $params = array(
@@ -38,6 +38,8 @@ class Oembed {
 
             $values['html'] = str_replace('?feature=oembed', '?feature=oembed&'.$query, $values['html']);
         }
+
+        // Vimeo, SoundCloud, Mixcloud
 
         return json_encode($values);
     }
@@ -53,26 +55,22 @@ class Oembed {
 
         if (preg_match('/youtube\.com$/', $host))
         {
-            $oembed_url = 'https://www.youtube.com/oembed';
+            return 'https://www.youtube.com/oembed?url='.$url.'&autoplay='.$autoplay;
         }
         elseif (preg_match('/mixcloud\.com$/', $host))
         {
-            $oembed_url = 'https://www.mixcloud.com/oembed/';
+            return 'https://www.mixcloud.com/oembed/?url='.$url.'&autoplay='.$autoplay;
         }
         elseif (preg_match('/soundcloud\.com$/', $host))
         {
-            $oembed_url = 'https://soundcloud.com/oembed.json';
+            return 'https://soundcloud.com/oembed.json?url='.$url.'&auto_play='.$autoplay;
         }
         elseif (preg_match('/vimeo\.com$/', $host))
         {
-            $oembed_url = 'https://vimeo.com/api/oembed.json';
-        }
-        else
-        {
-            return FALSE;
+            return 'https://vimeo.com/api/oembed.json?url='.$url.'&autoplay='.$autoplay;
         }
 
-        return $oembed_url.'?url='.$url.'&autoplay='.$autoplay;
+        return FALSE;
     }
 
 }
