@@ -2,15 +2,13 @@
 
 namespace Iksi;
 
-define('DS', DIRECTORY_SEPARATOR);
-
 class oEmbed {
 
     protected $config;
 
     public function __construct()
     {
-        $this->config = require_once(__DIR__ . DS .'config.php');
+        $this->config = require_once(__DIR__ . DIRECTORY_SEPARATOR .'config.php');
     }
 
     public function request($url, $autoplay = NULL)
