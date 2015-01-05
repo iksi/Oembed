@@ -9,4 +9,4 @@ $oembed = new Iksi\oEmbed();
 $oembed->request('https://soundcloud.com/toroymoi/so-many-details-remix');
 ```
 
-For autoplay add a second boolean parameter and make sure the correct autoplay is set in `config.php`. SoundCloud for instance uses `auto_play`.
+For autoplay add a second boolean parameter and make sure the correct autoplay key is set in `config.php`. SoundCloud for instance uses `auto_play`.
