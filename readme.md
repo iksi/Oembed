@@ -5,11 +5,8 @@ A PHP class to make a request to the oembed services of YouTube, Vimeo, SoundClo
 ## Usage
 
 ````
-$url = 'https://soundcloud.com/toroymoi/so-many-details-remix';
-
 $oembed = new Iksi\oEmbed();
-
-$oembed->request($url);
+$oembed->request('https://soundcloud.com/toroymoi/so-many-details-remix');
 ````
 
 For autoplay add a second boolean parameter and make sure the correct autoplay is set in `config.php`. SoundCloud for instance uses `auto_play`.
