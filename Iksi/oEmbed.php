@@ -45,23 +45,22 @@ class oEmbed {
 
         $provider = strtolower($data['provider_name']);
 
-        if (array_key_exists($provider, $this->config))
+        $parameters = array_key_exists($provider, $this->config)
+            ? $this->config[$provider]
+            : array();
+
+        if ($autoplay !== NULL && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters))))
         {
-            $parameters = $this->config[$provider];
-
-            if ($autoplay !== NULL && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters))))
-            {
-                $parameters[$autoplay_key] = $autoplay ? 'true' : 'false';
-            }
-
-            preg_match('/src="(?<url>[^"]+)"/', $data['html'], $matches);
-
-            $url = preg_replace('/https?:\/\//', '//', $matches['url'])
-                . (parse_url($matches['url'], PHP_URL_QUERY) ? '&' : '?')
-                . http_build_query($parameters);
-
-            $data['html'] = preg_replace('/src="([^"]+)"/', 'src="' . $url . '"', $data['html']);
+            $parameters[$autoplay_key] = $autoplay ? 'true' : 'false';
         }
+
+        preg_match('/src="(?<url>[^"]+)"/', $data['html'], $matches);
+
+        $url = preg_replace('/https?:\/\//', '//', $matches['url'])
+            . (parse_url($matches['url'], PHP_URL_QUERY) ? '&' : '?')
+            . http_build_query($parameters);
+
+        $data['html'] = preg_replace('/src="([^"]+)"/', 'src="' . $url . '"', $data['html']);
 
         return json_encode($data);
     }
