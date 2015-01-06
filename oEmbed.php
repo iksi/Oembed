@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * oEmbed class
+ *
+ * @author     Jur Topper <jur@iksi.cc>
+ * @copyright  (c) 2014-2015 Iksi
+ * @license    MIT
+ */
+
 namespace Iksi;
 
 class oEmbed {
