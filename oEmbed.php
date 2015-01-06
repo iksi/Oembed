@@ -3,7 +3,7 @@
 /**
  * oEmbed class
  *
- * @author     Jur Topper <jur@iksi.cc>
+ * @author     Iksi <info@iksi.cc>
  * @copyright  (c) 2014-2015 Iksi
  * @license    MIT
  */
