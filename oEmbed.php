@@ -14,17 +14,14 @@ class oEmbed
 {
     protected $config;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->config = require_once(__DIR__ . DIRECTORY_SEPARATOR .'config.php');
     }
 
-    public function request($url, $autoplay = NULL)
-    {
+    public function request($url, $autoplay = null) {
         $api_url = $this->buildUrl($url);
 
-        if ($api_url === FALSE)
-        {
+        if ($api_url === false) {
             return $this->error('something seems wrong with the url');
         }
 
@@ -37,8 +34,7 @@ class oEmbed
 
         $response = curl_exec($curl_handle);
 
-        if (curl_errno($curl_handle))
-        {
+        if (curl_errno($curl_handle)) {
             return $this->error(curl_error($curl_handle));
         }
 
@@ -57,8 +53,7 @@ class oEmbed
             ? $this->config[$provider]
             : array();
 
-        if ($autoplay !== null && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters))))
-        {
+        if ($autoplay !== null && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters)))) {
             $parameters[$autoplay_key] = $autoplay ? 'true' : 'false';
         }
 
@@ -75,43 +70,36 @@ class oEmbed
 
     protected function buildUrl($url)
     {
-        if ( ! filter_var($url, FILTER_VALIDATE_URL))
-        {
+        if ( ! filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
         }
 
         $host = parse_url($url, PHP_URL_HOST);
         
-        if (preg_match('/mixcloud\.com$/', $host))
-        {
+        if (preg_match('/mixcloud\.com$/', $host)) {
             return 'https://www.mixcloud.com/oembed/?url=' . $url;
         }
         
-        if (preg_match('/soundcloud\.com$/', $host))
-        {
+        if (preg_match('/soundcloud\.com$/', $host)) {
             return 'https://soundcloud.com/oembed.json?url=' . $url;
         }
 
-        if (preg_match('/spotify\.com$/', $host))
-        {
+        if (preg_match('/spotify\.com$/', $host)) {
             return 'https://embed.spotify.com/oembed/?url=' . $url;
         }
 
-        if (preg_match('/vimeo\.com$/', $host))
-        {
+        if (preg_match('/vimeo\.com$/', $host)) {
             return 'https://vimeo.com/api/oembed.json?url=' . $url;
         }
 
-        if (preg_match('/youtube\.com$/', $host))
-        {
+        if (preg_match('/youtube\.com$/', $host)) {
             return 'https://www.youtube.com/oembed?url=' . $url;
         }
 
         return false;
     }
 
-    protected function error($error)
-    {
+    protected function error($error) {
         return json_encode(array('error' => $error));
     }
 }
