@@ -14,11 +14,13 @@ class oEmbed
 {
     protected $config;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->config = require_once(__DIR__ . DIRECTORY_SEPARATOR .'config.php');
     }
 
-    public function request($url, $autoplay = null) {
+    public function request($url, $autoplay = null)
+    {
         $api_url = $this->buildUrl($url);
 
         if ($api_url === false) {
@@ -99,7 +101,8 @@ class oEmbed
         return false;
     }
 
-    protected function error($error) {
+    protected function error($error)
+    {
         return json_encode(array('error' => $error));
     }
 }
