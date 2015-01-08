@@ -10,8 +10,8 @@
 
 namespace Iksi;
 
-class oEmbed {
-
+class oEmbed
+{
     protected $config;
 
     public function __construct()
@@ -114,5 +114,4 @@ class oEmbed {
     {
         return json_encode(array('error' => $error));
     }
-
 }
