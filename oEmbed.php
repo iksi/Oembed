@@ -21,7 +21,7 @@ class oEmbed {
 
     public function request($url, $autoplay = NULL)
     {
-        $api_url = $this->build_url($url);
+        $api_url = $this->buildUrl($url);
 
         if ($api_url === FALSE)
         {
@@ -44,12 +44,12 @@ class oEmbed {
 
         curl_close($curl_handle);
 
-        return $this->filter($response, $autoplay);
+        return $this->filterResponse($response, $autoplay);
     }
 
-    protected function filter($response, $autoplay)
+    protected function filterResponse($response, $autoplay)
     {
-        $data = json_decode($response, TRUE);
+        $data = json_decode($response, true);
 
         $provider = strtolower($data['provider_name']);
 
@@ -57,7 +57,7 @@ class oEmbed {
             ? $this->config[$provider]
             : array();
 
-        if ($autoplay !== NULL && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters))))
+        if ($autoplay !== null && $autoplay_key = current(preg_grep('/^auto_?play$/i', array_keys($parameters))))
         {
             $parameters[$autoplay_key] = $autoplay ? 'true' : 'false';
         }
@@ -73,11 +73,11 @@ class oEmbed {
         return json_encode($data);
     }
 
-    protected function build_url($url)
+    protected function buildUrl($url)
     {
         if ( ! filter_var($url, FILTER_VALIDATE_URL))
         {
-            return FALSE;
+            return false;
         }
 
         $host = parse_url($url, PHP_URL_HOST);
@@ -107,7 +107,7 @@ class oEmbed {
             return 'https://www.youtube.com/oembed?url=' . $url;
         }
 
-        return FALSE;
+        return false;
     }
 
     protected function error($error)
