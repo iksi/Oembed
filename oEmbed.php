@@ -74,6 +74,7 @@ class oEmbed
         $response = array(
             'error' => $error
         );
+
         return json_encode($response);
     }
 }
