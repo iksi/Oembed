@@ -50,7 +50,7 @@ class oEmbed
             return 'https://www.mixcloud.com/oembed/?url=' . $url;
         }
         
-        if (preg_match('/soundcloud\.com$/', $host)) {
+        if (preg_match('/(soundcloud\.com|snd\.sc)$/', $host)) {
             return 'https://soundcloud.com/oembed.json?url=' . $url;
         }
 
@@ -62,7 +62,7 @@ class oEmbed
             return 'https://vimeo.com/api/oembed.json?url=' . $url;
         }
 
-        if (preg_match('/youtube\.com$/', $host)) {
+        if (preg_match('/(youtube\.com|youtu\.be)$/', $host)) {
             return 'https://www.youtube.com/oembed?url=' . $url;
         }
 
