@@ -12,17 +12,17 @@ namespace Iksi;
 
 class oEmbed
 {
-    public function get($url)
+    public function fetch($url)
     {
-        $apiUrl = $this->getApiUrl($url);
+        $providerUrl = $this->getProviderUrl($url);
 
-        if ($apiUrl === false) {
+        if ($providerUrl === false) {
             return $this->error('something seems wrong with the url');
         }
 
         $curlHandle = curl_init();
 
-        curl_setopt($curlHandle, CURLOPT_URL, $apiUrl);
+        curl_setopt($curlHandle, CURLOPT_URL, $providerUrl);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curlHandle, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
@@ -38,7 +38,7 @@ class oEmbed
         return $response;
     }
 
-    protected function getApiUrl($url)
+    protected function getProviderUrl($url)
     {
         if ( ! filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
