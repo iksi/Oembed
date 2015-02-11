@@ -12,18 +12,9 @@ namespace Iksi;
 
 class oEmbed
 {
-    public $url;
-    
-    public function url($url)
+    public function fetch($url)
     {
-        $this->url = $url;
-        
-        return $this;
-    }
-
-    public function fetch()
-    {
-        $providerUrl = $this->getProviderUrl($this->url);
+        $providerUrl = $this->getProviderUrl($url);
 
         if ($providerUrl === false) {
             return $this->error('something seems wrong with the url');
