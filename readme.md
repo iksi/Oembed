@@ -6,5 +6,5 @@ A PHP class to make a request to the oembed services of YouTube, Vimeo, SoundClo
 
 ```PHP
 $oembed = new Iksi\oEmbed;
-$oembed->url('https://soundcloud.com/toroymoi/so-many-details-remix')->fetch();
+$oembed->fetch('https://soundcloud.com/toroymoi/so-many-details-remix');
 ```
