@@ -12,8 +12,20 @@ namespace Iksi;
 
 class oEmbed
 {
+    protected $endPoints = array(
+        '/mixcloud\.com$/'             => 'https://www.mixcloud.com/oembed/',
+        '/(soundcloud\.com|snd\.sc)$/' => 'https://soundcloud.com/oembed.json',
+        '/spotify\.com$/'              => 'https://embed.spotify.com/oembed/',
+        '/vimeo\.com$/'                => 'https://vimeo.com/api/oembed.json',
+        '/(youtube\.com|youtu\.be)$/'  => 'https://www.youtube.com/oembed/'
+    );
+
     public function get($url)
     {
+        if ($this->validUrl($url) === false) {
+            return $this->error('invalid url');
+        }
+
         $endPoint = $this->endPoint($url);
 
         if ($endPoint === false) {
@@ -44,35 +56,24 @@ class oEmbed
     {
         return json_encode(compact('error'));
     }
-
-    protected function getProviderUrl($url)
+    
+    protected function validUrl($url)
     {
-        if ( ! filter_var($url, FILTER_VALIDATE_URL)) {
-            return false;
-        }
+        return filter_var($url, FILTER_VALIDATE_URL);
+    }
+
+    protected function endPoint($url)
+    {
+        $endPoint = false;
 
         $host = parse_url($url, PHP_URL_HOST);
         
-        if (preg_match('/mixcloud\.com$/', $host)) {
-            return 'https://www.mixcloud.com/oembed/';
-        }
-        
-        if (preg_match('/(soundcloud\.com|snd\.sc)$/', $host)) {
-            return 'https://soundcloud.com/oembed.json';
-        }
+        array_walk($this->endPoints, function($url, $pattern) use($host, &$endPoint) {
+            if (preg_match($pattern, $host)) {
+                $endPoint = $url;
+            }
+        });
 
-        if (preg_match('/spotify\.com$/', $host)) {
-            return 'https://embed.spotify.com/oembed/';
-        }
-
-        if (preg_match('/vimeo\.com$/', $host)) {
-            return 'https://vimeo.com/api/oembed.json';
-        }
-
-        if (preg_match('/(youtube\.com|youtu\.be)$/', $host)) {
-            return 'https://www.youtube.com/oembed/';
-        }
-
-        return false;
+        return $endPoint;
     }
 }
