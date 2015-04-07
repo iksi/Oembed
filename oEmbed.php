@@ -69,9 +69,7 @@ class oEmbed
         $host = parse_url($url, PHP_URL_HOST);
         
         array_walk($this->endPoints, function($url, $pattern) use($host, &$endPoint) {
-            if (preg_match($pattern, $host)) {
-                $endPoint = $url;
-            }
+            $endPoint = preg_match($pattern, $host) ? $url : $endPoint;
         });
 
         return $endPoint;
