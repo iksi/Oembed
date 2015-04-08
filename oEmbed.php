@@ -22,14 +22,12 @@ class oEmbed
 
     public function get($url)
     {
-        if ($this->validUrl($url) === false) {
-            return $this->error('invalid url');
-        }
-
         $endPoint = $this->endPoint($url);
 
         if ($endPoint === false) {
-            return $this->error('no valid endpoint found');
+            return json_encode(
+                array('error' => 'no valid endpoint found')
+            );
         }
 
         $curlHandle = curl_init();
@@ -44,29 +42,21 @@ class oEmbed
         $response = curl_exec($curlHandle);
 
         if (curl_errno($curlHandle)) {
-            return $this->error(curl_error($curlHandle));
+            $response = json_encode(
+                array('error' => curl_error($curlHandle))
+            );
         }
 
         curl_close($curlHandle);
 
         return $response;
     }
-    
-    protected function error($error)
-    {
-        return json_encode(compact('error'));
-    }
-    
-    protected function validUrl($url)
-    {
-        return filter_var($url, FILTER_VALIDATE_URL);
-    }
 
     protected function endPoint($url)
     {
-        $endPoint = false;
-
         $host = parse_url($url, PHP_URL_HOST);
+
+        $endPoint = false;
         
         array_walk($this->endPoints, function($url, $pattern) use($host, &$endPoint) {
             $endPoint = preg_match($pattern, $host) ? $url : $endPoint;
