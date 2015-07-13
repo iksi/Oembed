@@ -55,13 +55,13 @@ class oEmbed
     protected function endPoint($url)
     {
         $host = parse_url($url, PHP_URL_HOST);
-
-        $endPoint = false;
         
-        array_walk($this->endPoints, function($url, $pattern) use($host, &$endPoint) {
-            $endPoint = preg_match($pattern, $host) ? $url : $endPoint;
-        });
+        foreach ($this->endPoints as $pattern => $endPoint) {
+            if (preg_match($pattern, $host)) {
+                return $endPoint;
+            }
+        }
 
-        return $endPoint;
+        return false;
     }
 }
