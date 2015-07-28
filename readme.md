@@ -1,6 +1,12 @@
 # oEmbed
 
-A PHP class to make a request to the oEmbed services of YouTube, Vimeo, SoundCloud, MixCloud and Spotify. When no format is specified json is returned.
+A PHP class to make an oEmbed request. If no format is specified json is returned. Supported services:
+
+- YouTube
+- Vimeo
+- SoundCloud
+- MixCloud
+- Spotify
 
 ## Usage
 
