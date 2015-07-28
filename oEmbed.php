@@ -12,6 +12,7 @@ namespace Iksi;
 
 class oEmbed
 {
+    // Default format
     protected $format = 'json';
     protected $parameters;
 
@@ -77,7 +78,7 @@ class oEmbed
         return false;
     }
     
-    public function parameters($key = false)
+    protected function parameters($key = false)
     {
         if ($key === false) {
             return $this->parameters;
