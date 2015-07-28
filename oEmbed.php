@@ -26,6 +26,9 @@ class oEmbed
     
     public function __construct($parameters = array())
     {
+        // Filter out empty values
+        $parameters = array_filter($parameters);
+
         // Add default format to parameters
         $this->parameters = $parameters + array('format' => $this->format);
     }
