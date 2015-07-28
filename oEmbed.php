@@ -12,56 +12,78 @@ namespace Iksi;
 
 class oEmbed
 {
-    protected $endPoints = array(
-        '/mixcloud\.com$/'             => 'https://www.mixcloud.com/oembed/',
-        '/(soundcloud\.com|snd\.sc)$/' => 'https://soundcloud.com/oembed.json',
-        '/spotify\.com$/'              => 'https://embed.spotify.com/oembed/',
-        '/vimeo\.com$/'                => 'https://vimeo.com/api/oembed.json',
-        '/(youtube\.com|youtu\.be)$/'  => 'https://www.youtube.com/oembed/'
+    protected $format = 'json';
+    protected $parameters;
+
+    // Provider endpoints (%s is for the format that gets added)
+    protected $endpoints = array(
+        '/mixcloud\.com$/'           => 'https://www.mixcloud.com/oembed/',
+        '/soundcloud\.com|snd\.sc$/' => 'https://soundcloud.com/oembed',
+        '/spotify\.com|spoti\.fi$/'  => 'https://embed.spotify.com/oembed/',
+        '/vimeo\.com$/'              => 'https://vimeo.com/api/oembed.%s',
+        '/youtube\.com|youtu\.be$/'  => 'https://www.youtube.com/oembed/'
     );
-
-    public function get($url)
+    
+    public function __construct($parameters = array())
     {
-        $endPoint = $this->endPoint($url);
+        // Add default format to parameters
+        $this->parameters = $parameters + array('format' => $this->format);
+    }
 
-        if ($endPoint === false) {
-            return json_encode(
-                array('error' => 'no valid endpoint found')
-            );
+    public function get()
+    {
+        $endpoint = $this->endpoint();
+
+        if ($endpoint === false) {
+            return;
         }
 
         $curlHandle = curl_init();
         
-        $curlUrl = $endPoint . '?url=' . urlencode($url);
+        $curlUrl = $endpoint . '?' . http_build_query($this->parameters());
 
         curl_setopt($curlHandle, CURLOPT_URL, $curlUrl);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curlHandle, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 
-        $response = curl_exec($curlHandle);
-
-        if (curl_errno($curlHandle)) {
-            $response = json_encode(
-                array('error' => curl_error($curlHandle))
-            );
-        }
+        $curlResponse = curl_exec($curlHandle);
+        $curlError = curl_errno($curlHandle) ? curl_error($curlHandle) : false;
 
         curl_close($curlHandle);
+        
+        if ($curlError !== false) {
+            return $curlError;
+        }
 
-        return $response;
+        return $curlResponse;
     }
 
-    protected function endPoint($url)
+    protected function endpoint()
     {
-        $host = parse_url($url, PHP_URL_HOST);
+        // Get the correct provider based on the url
+        $host = parse_url($this->parameters('url'), PHP_URL_HOST);
         
-        foreach ($this->endPoints as $pattern => $endPoint) {
+        foreach ($this->endpoints as $pattern => $endpoint) {
             if (preg_match($pattern, $host)) {
-                return $endPoint;
+                // Return the endpoint and possibly add the format
+                return sprintf($endpoint, $this->parameters('format'));
             }
         }
 
+        return false;
+    }
+    
+    public function parameters($key = false)
+    {
+        if ($key === false) {
+            return $this->parameters;
+        }
+
+        if (array_key_exists($key, $this->parameters)) {
+            return $this->parameters[$key];
+        }
+        
         return false;
     }
 }
