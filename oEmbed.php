@@ -14,7 +14,7 @@ class oEmbed
 {
     // Default format
     protected $format = 'json';
-    protected $parameters;
+    protected $arguments;
 
     // Provider endpoints (%s is for the format that gets added)
     protected $endpoints = array(
@@ -27,13 +27,13 @@ class oEmbed
     
     public function __construct($parameters = array())
     {
+        // Default format
+        $arguments = $arguments + array('format' => $this->format);
+        
         // Filter out empty values
-        $parameters = array_filter($parameters, function($value) {
+        $this->arguments = array_filter($arguments, function($value) {
             return strlen($value);
         });
-
-        // Add default format to parameters
-        $this->parameters = $parameters + array('format' => $this->format);
     }
 
     public function get()
@@ -46,7 +46,7 @@ class oEmbed
 
         $curlHandle = curl_init();
         
-        $curlUrl = $endpoint . '?' . http_build_query($this->parameters());
+        $curlUrl = $endpoint . '?' . http_build_query($this->arguments());
 
         curl_setopt($curlHandle, CURLOPT_URL, $curlUrl);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
@@ -68,26 +68,26 @@ class oEmbed
     protected function endpoint()
     {
         // Get the correct provider based on the url
-        $host = parse_url($this->parameters('url'), PHP_URL_HOST);
+        $host = parse_url($this->arguments('url'), PHP_URL_HOST);
         
         foreach ($this->endpoints as $pattern => $endpoint) {
             if (preg_match($pattern, $host)) {
                 // Return the endpoint and possibly add the format
-                return sprintf($endpoint, $this->parameters('format'));
+                return sprintf($endpoint, $this->arguments('format'));
             }
         }
 
         return false;
     }
     
-    protected function parameters($key = false)
+    protected function arguments($key = false)
     {
         if ($key === false) {
-            return $this->parameters;
+            return $this->arguments;
         }
 
-        if (array_key_exists($key, $this->parameters)) {
-            return $this->parameters[$key];
+        if (array_key_exists($key, $this->arguments)) {
+            return $this->arguments[$key];
         }
         
         return false;
