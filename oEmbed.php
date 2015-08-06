@@ -16,12 +16,12 @@ class oEmbed
     protected $format = 'json';
     protected $arguments;
 
-    // Provider endpoints (%s is for the format that gets added)
+    // Endpoints (<format> will be replaced with the requested format)
     protected $endpoints = array(
         '/mixcloud\.com$/'           => 'https://www.mixcloud.com/oembed/',
         '/soundcloud\.com|snd\.sc$/' => 'https://soundcloud.com/oembed',
         '/spotify\.com|spoti\.fi$/'  => 'https://embed.spotify.com/oembed/',
-        '/vimeo\.com$/'              => 'https://vimeo.com/api/oembed.%s',
+        '/vimeo\.com$/'              => 'https://vimeo.com/api/oembed.<format>',
         '/youtube\.com|youtu\.be$/'  => 'https://www.youtube.com/oembed/'
     );
     
@@ -31,9 +31,7 @@ class oEmbed
         $arguments = $arguments + array('format' => $this->format);
         
         // Filter out empty values
-        $this->arguments = array_filter($arguments, function($value) {
-            return strlen($value);
-        });
+        $this->arguments = array_filter($arguments, 'strlen');
     }
 
     public function get()
@@ -48,10 +46,13 @@ class oEmbed
         
         $curlUrl = $endpoint . '?' . http_build_query($this->arguments());
 
-        curl_setopt($curlHandle, CURLOPT_URL, $curlUrl);
-        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($curlHandle, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+        curl_setopt_array($curlHandle, array(
+            CURLOPT_URL            => $curlUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
+            CURLOPT_USERAGENT      => $_SERVER['HTTP_USER_AGENT'],
+            CURLOPT_ENCODING       => 'utf-8'
+        ));
 
         $curlResponse = curl_exec($curlHandle);
         $curlError = curl_errno($curlHandle) ? curl_error($curlHandle) : false;
@@ -72,8 +73,8 @@ class oEmbed
         
         foreach ($this->endpoints as $pattern => $endpoint) {
             if (preg_match($pattern, $host)) {
-                // Return the endpoint and possibly add the format
-                return sprintf($endpoint, $this->arguments('format'));
+                // Return the endpoint and add in the format (.json/.xml)
+                return str_replace('<format>', $this->arguments('format'), $endpoint);
             }
         }
 
