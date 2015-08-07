@@ -11,9 +11,11 @@ A PHP class to make an oEmbed request. If no format is specified json is returne
 ## Usage
 
 ```PHP
-$oembed = new Iksi\oEmbed;
-$oembed->get(array(
-    'url'    => 'https://soundcloud.com/toroymoi/so-many-details-remix',
+$arguments = array(
+    'url' => 'https://soundcloud.com/toroymoi/so-many-details-remix',
     'format' => 'xml'
-));
+);
+
+$oembed = new Iksi\oEmbed($arguments);
+$response = $oembed->fetch();
 ```
