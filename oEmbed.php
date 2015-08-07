@@ -1,7 +1,7 @@
 <?php
 
 /**
- * oEmbed class
+ * oEmbed
  *
  * @author     Iksi <info@iksi.cc>
  * @copyright  (c) 2014-2015 Iksi
@@ -12,85 +12,96 @@ namespace Iksi;
 
 class oEmbed
 {
-    // Default format
-    protected $format = 'json';
-    protected $arguments;
+    protected $arguments = array();
+    protected $providers = array();
+    protected $provider = array();
+    protected $endpoint = null;
 
-    // Endpoints (<format> will be replaced with the requested format)
-    protected $endpoints = array(
-        '/mixcloud\.com$/'           => 'https://www.mixcloud.com/oembed/',
-        '/soundcloud\.com|snd\.sc$/' => 'https://soundcloud.com/oembed',
-        '/spotify\.com|spoti\.fi$/'  => 'https://embed.spotify.com/oembed/',
-        '/vimeo\.com$/'              => 'https://vimeo.com/api/oembed.<format>',
-        '/youtube\.com|youtu\.be$/'  => 'https://www.youtube.com/oembed/'
-    );
-    
-    public function __construct($parameters = array())
+    public function __construct($arguments = array())
     {
-        // Default format
-        $arguments = $arguments + array('format' => $this->format);
-        
-        // Filter out empty values
-        $this->arguments = array_filter($arguments, 'strlen');
-    }
+        // Arguments
+        $this->arguments = $arguments;
 
-    public function get()
-    {
-        $endpoint = $this->endpoint();
-
-        if ($endpoint === false) {
-            return;
+        // Set default format
+        if ($this->getArgument('format') === null) {
+            $this->setArgument('format', 'json');
         }
 
-        $curlHandle = curl_init();
-        
-        $curlUrl = $endpoint . '?' . http_build_query($this->arguments());
+        // Providers
+        if (is_readable(__DIR__ . DIRECTORY_SEPARATOR . 'providers.php')) {
+            $this->providers = include(__DIR__ . DIRECTORY_SEPARATOR . 'providers.php');
+        }
 
-        curl_setopt_array($curlHandle, array(
-            CURLOPT_URL            => $curlUrl,
+        // Set provider and endpoint
+        $url = $this->getArgument('url');
+        $format = $this->getArgument('format');
+
+        $this->setProvider($url);
+        $this->setEndpoint($format);
+    }
+
+    public function fetch()
+    {
+        if ($this->endpoint === null) {
+            return 'No endpoint found';
+        }
+
+        $url = $this->endpoint . '?' . http_build_query($this->arguments);
+
+        $handle = curl_init();
+
+        curl_setopt_array($handle, array(
+            CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_IPRESOLVE      => CURL_IPRESOLVE_V4,
             CURLOPT_USERAGENT      => $_SERVER['HTTP_USER_AGENT'],
             CURLOPT_ENCODING       => 'utf-8'
         ));
 
-        $curlResponse = curl_exec($curlHandle);
-        $curlError = curl_errno($curlHandle) ? curl_error($curlHandle) : false;
+        $response = curl_exec($handle);
+        $error = curl_error($handle);
 
-        curl_close($curlHandle);
-        
-        if ($curlError !== false) {
-            return $curlError;
-        }
+        curl_close($handle);
 
-        return $curlResponse;
+        return ($reply !== false) ? $reply : $error;
     }
 
-    protected function endpoint()
+    protected function setEndpoint($format)
     {
-        // Get the correct provider based on the url
-        $host = parse_url($this->arguments('url'), PHP_URL_HOST);
-        
-        foreach ($this->endpoints as $pattern => $endpoint) {
-            if (preg_match($pattern, $host)) {
-                // Return the endpoint and add in the format (.json/.xml)
-                return str_replace('<format>', $this->arguments('format'), $endpoint);
+        if (array_key_exists('endpoint', $this->provider)) {
+            // Swap out <format> for the defined format
+            $this->endpoint = str_replace('<format>', $format, $this->provider['endpoint']);
+        }
+    }
+
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    protected function setProvider($url)
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        // Set the provider based on the pattern match
+        foreach ($this->providers as $provider) {
+            if (array_key_exists('pattern', $provider) && preg_match($provider['pattern'], $host)) {
+                $this->provider = $provider;
             }
         }
-
-        return false;
     }
-    
-    protected function arguments($key = false)
-    {
-        if ($key === false) {
-            return $this->arguments;
-        }
 
+    public function getArgument($key)
+    {
         if (array_key_exists($key, $this->arguments)) {
             return $this->arguments[$key];
         }
-        
-        return false;
+
+        return null;
+    }
+
+    protected function setArgument($key, $value)
+    {
+        $this->arguments[$key] = $value;
     }
 }
