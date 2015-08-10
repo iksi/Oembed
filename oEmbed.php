@@ -58,7 +58,7 @@ class oEmbed
             CURLOPT_ENCODING       => 'utf-8'
         ));
 
-        $reply = curl_exec($handle);
+        $response = curl_exec($handle);
         $error = curl_error($handle);
 
         curl_close($handle);
@@ -67,7 +67,7 @@ class oEmbed
             return $error;
         }
 
-        return $reply;
+        return $response;
     }
 
     protected function setEndpoint($format)
