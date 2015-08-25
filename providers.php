@@ -1,6 +1,5 @@
 <?php
 
-// <format> will be replaced with the requested format
 return array(
     array(
         'name'     => 'mixcloud',
