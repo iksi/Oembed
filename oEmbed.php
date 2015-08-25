@@ -19,7 +19,6 @@ class oEmbed
 
     public function __construct($arguments = array())
     {
-        // Arguments
         $this->arguments = $arguments;
 
         // Set default format
@@ -32,12 +31,8 @@ class oEmbed
             $this->providers = include(__DIR__ . DIRECTORY_SEPARATOR . 'providers.php');
         }
 
-        // Set provider and endpoint
-        $url = $this->getArgument('url');
-        $format = $this->getArgument('format');
-
-        $this->setProvider($url);
-        $this->setEndpoint($format);
+        $this->setProvider($this->getArgument('url'));
+        $this->setEndpoint($this->getArgument('format'));
     }
 
     public function fetch()
@@ -73,14 +68,18 @@ class oEmbed
     protected function setEndpoint($format)
     {
         if (array_key_exists('endpoint', $this->provider)) {
-            // Swap out <format> for the defined format
+            // Swap out <format> for the requested format
             $this->endpoint = str_replace('<format>', $format, $this->provider['endpoint']);
         }
     }
 
-    public function getProvider()
+    public function getProvider($key)
     {
-        return $this->provider;
+        if (array_key_exists($key, $this->provider)) {
+            return $this->provider[$key];
+        }
+
+        return null;
     }
 
     protected function setProvider($url)
